@@ -5,7 +5,8 @@ using System.Net.Http;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Graph;
-using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
 
 namespace console_csharp_snippets_sample
 {
@@ -32,8 +33,18 @@ namespace console_csharp_snippets_sample
                                             //"Group.Read.All" 
                                         };
 
-        public static PublicClientApplication IdentityClientApp = new PublicClientApplication(clientIdForUser);
-        public static ConfidentialClientApplication IdentityAppOnlyApp = new ConfidentialClientApplication(clientIdForApp, Constants.AuthorityUri, Constants.RedirectUriForAppAuthn, new ClientCredential(Constants.ClientSecret), new TokenCache(), new TokenCache());
+        //public static PublicClientApplication IdentityClientApp = new PublicClientApplication(clientIdForUser);
+        //public static ConfidentialClientApplication IdentityAppOnlyApp = new ConfidentialClientApplication(clientIdForApp, Constants.AuthorityUri, Constants.RedirectUriForAppAuthn, new ClientCredential(Constants.ClientSecret), new TokenCache(), new TokenCache());
+
+        private static string aadInstance = Constants.Authority;
+        private static string tenant = Constants.Tenant;
+        private static string authority = aadInstance+tenant;
+
+        public static string appKey = Constants.ClientSecret;
+
+        private static AuthenticationContext authContext = new AuthenticationContext(authority);
+        private static ClientCredential clientCredential = new ClientCredential(clientIdForApp, appKey);
+
         public static string TokenForUser = null;
         public static string TokenForApp = null;
         public static DateTimeOffset Expiration;
@@ -48,7 +59,7 @@ namespace console_csharp_snippets_sample
             try
             {
                 graphClient = new GraphServiceClient(
-                    "https://graph.microsoft.com/v1.0",
+                    "https://microsoftgraph.chinacloudapi.cn/v1.0",
                     new DelegateAuthenticationProvider(
                         async (requestMessage) =>
                         {
@@ -104,7 +115,7 @@ namespace console_csharp_snippets_sample
             try
             {
                 graphClient = new GraphServiceClient(
-                    "https://graph.microsoft.com/v1.0",
+                    "https://microsoftgraph.chinacloudapi.cn/v1.0",
                     new DelegateAuthenticationProvider(
                         async (requestMessage) =>
                         {
